@@ -226,7 +226,7 @@ auto-inventory/
 
 ### 01 — Dashboard Overview
 
-<img width="1600" height="900" alt="Auto Inventory Dashboard" src="https://github.com/user-attachments/assets/a0ca8449-10ed-4d25-ac47-75beafca3023" />
+<img width="1600" height="900" alt="Screenshot (257)" src="https://github.com/user-attachments/assets/59c6b144-3ec0-43d8-ab61-f328bdd37df5" />
 
 ### 02 — Forecasting / Analytics
 
