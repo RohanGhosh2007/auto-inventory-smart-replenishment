@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Inventory — Ops Console</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <div class="shell">
+
+        <!-- Side rail navigation -->
+        <aside class="rail">
+            <div class="rail-brand">
+                <div class="rail-mark">AI</div>
+                <div class="rail-brand-text">
+                    <h1>Auto Inventory</h1>
+                    <span>Ops console</span>
+                </div>
+            </div>
+
+            <nav class="rail-nav">
+                <button class="rail-link is-active" data-target="view-overview">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                    Overview
+                </button>
+                <button class="rail-link" data-target="view-manage">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 21v-6M4 11V3M12 21v-9M12 8V3M20 21v-4M20 13V3"/><circle cx="4" cy="13" r="2"/><circle cx="12" cy="10" r="2"/><circle cx="20" cy="15" r="2"/></svg>
+                    Add &amp; record
+                </button>
+                <button class="rail-link" data-target="view-inventory">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 8L12 3 3 8l9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
+                    Inventory
+                </button>
+                <button class="rail-link" data-target="view-forecast">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>
+                    Forecast
+                </button>
+                <button class="rail-link" data-target="view-replenishment">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4v5h5"/><path d="M20 20v-5h-5"/><path d="M4.6 15A8 8 0 0 0 19 9"/><path d="M19.4 9A8 8 0 0 0 5 15"/></svg>
+                    Replenishment
+                </button>
+                <button class="rail-link" data-target="view-orders">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3h6l1 4H8l1-4Z"/><rect x="4" y="7" width="16" height="14" rx="1.5"/><path d="M9 12h6M9 16h6"/></svg>
+                    Purchase orders
+                </button>
+            </nav>
+
+            <div class="rail-foot">
+                <span class="dot offline" id="conn-dot"></span><span id="conn-label">Checking backend…</span>
+            </div>
+        </aside>
+
+        <!-- Main column -->
+        <div class="main">
+
+            <header class="topbar">
+                <div class="topbar-title">
+                    <h2 id="page-title">Overview</h2>
+                    <p id="page-subtitle">Live snapshot of stock, demand and open orders.</p>
+                </div>
+                <div class="topbar-meta" id="topbar-clock">—</div>
+            </header>
+
+            <div class="content">
+
+                <div class="banner" id="conn-banner">
+                    <span>Can't reach the API. Check that the backend server is running.</span>
+                    <button id="conn-retry">Retry</button>
+                </div>
+
+                <!-- ============================= OVERVIEW ============================= -->
+                <section class="view is-active" id="view-overview">
+                    <div class="section-head">
+                        <h3>Key metrics</h3>
+                        <p>Pulled straight from your product and order data — nothing here is simulated.</p>
+                    </div>
+
+                    <div class="kpi-grid" id="kpi-grid">
+                        <div class="kpi kpi--hero" id="kpi-value">
+                            <p class="kpi-label">Inventory value</p>
+                            <div class="kpi-skel"></div>
+                            <p class="kpi-sub">Current stock × unit price, across all products</p>
+                        </div>
+                        <div class="kpi" id="kpi-total">
+                            <p class="kpi-label">Total products</p>
+                            <div class="kpi-skel"></div>
+                        </div>
+                        <div class="kpi tone-amber" id="kpi-low">
+                            <p class="kpi-label">Low stock</p>
+                            <div class="kpi-skel"></div>
+                        </div>
+                        <div class="kpi tone-red" id="kpi-out">
+                            <p class="kpi-label">Out of stock</p>
+                            <div class="kpi-skel"></div>
+                        </div>
+                        <div class="kpi tone-amber" id="kpi-reorder">
+                            <p class="kpi-label">Needs reorder</p>
+                            <div class="kpi-skel"></div>
+                        </div>
+                        <div class="kpi tone-blue" id="kpi-pending">
+                            <p class="kpi-label">Pending orders</p>
+                            <div class="kpi-skel"></div>
+                        </div>
+                    </div>
+
+                    <div class="section-head">
+                        <h3>Inventory snapshot</h3>
+                        <p>The five products closest to needing a reorder.</p>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th class="num">Stock</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="overview-table">
+                                <tr class="row-loading"><td colspan="4">Loading inventory…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ============================= MANAGE ============================= -->
+                <section class="view" id="view-manage">
+                    <div class="section-head">
+                        <h3>Add &amp; record</h3>
+                        <p>Register new products and log sales as they happen.</p>
+                    </div>
+
+                    <div class="two-col">
+                        <div class="card">
+                            <h4>Add product</h4>
+                            <form id="product-form" novalidate>
+                                <div class="field">
+                                    <label for="product-name">Product name</label>
+                                    <input type="text" id="product-name" placeholder="e.g. Wireless mouse" required>
+                                </div>
+                                <div class="field">
+                                    <label for="product-category">Category</label>
+                                    <input type="text" id="product-category" placeholder="e.g. Peripherals" required>
+                                </div>
+                                <div class="form-row-2">
+                                    <div class="field">
+                                        <label for="product-stock">Current stock</label>
+                                        <input type="number" id="product-stock" min="0" placeholder="0" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="product-price">Unit price</label>
+                                        <input type="number" id="product-price" min="0" step="0.01" placeholder="0.00" required>
+                                    </div>
+                                </div>
+                                <div class="form-row-2">
+                                    <div class="field">
+                                        <label for="product-lead-time">Lead time (days)</label>
+                                        <input type="number" id="product-lead-time" min="0" placeholder="0" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="product-safety-stock">Safety stock</label>
+                                        <input type="number" id="product-safety-stock" min="0" placeholder="0" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-full">
+                                    <span class="btn-label">Add product</span>
+                                </button>
+                                <p class="form-msg" id="product-message"></p>
+                            </form>
+                        </div>
+
+                        <div class="card">
+                            <h4>Record sale</h4>
+                            <form id="sale-form" novalidate>
+                                <div class="field">
+                                    <label for="sale-product">Product</label>
+                                    <select id="sale-product" required>
+                                        <option value="">Select product</option>
+                                    </select>
+                                </div>
+                                <div class="form-row-2">
+                                    <div class="field">
+                                        <label for="sale-quantity">Quantity</label>
+                                        <input type="number" id="sale-quantity" min="1" placeholder="0" required>
+                                    </div>
+                                    <div class="field">
+                                        <label for="sale-date">Date</label>
+                                        <input type="date" id="sale-date" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-full">
+                                    <span class="btn-label">Record sale</span>
+                                </button>
+                                <p class="form-msg" id="sale-message"></p>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================= INVENTORY ============================= -->
+                <section class="view" id="view-inventory">
+                    <div class="section-head">
+                        <h3>Inventory</h3>
+                        <p>Every product currently tracked, with live stock status.</p>
+                    </div>
+
+                    <div class="table-toolbar">
+                        <div class="table-search">
+                            <input type="text" id="inventory-search" placeholder="Search by product or category…">
+                            <select id="inventory-filter">
+                                <option value="all">All statuses</option>
+                                <option value="normal">Normal</option>
+                                <option value="low">Low stock</option>
+                                <option value="out">Out of stock</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th class="num">Stock</th>
+                                    <th class="num">Safety stock</th>
+                                    <th class="num">Unit price</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table">
+                                <tr class="row-loading"><td colspan="7">Loading inventory…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ============================= FORECAST ============================= -->
+                <section class="view" id="view-forecast">
+                    <div class="section-head">
+                        <h3>Demand forecast</h3>
+                        <p>Recent sales against a simple 7-day moving average.</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="forecast-toolbar">
+                            <div class="field">
+                                <label for="forecast-product">Product</label>
+                                <select id="forecast-product">
+                                    <option value="">Select product</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="forecast-empty" class="empty-panel">
+                            Select a product above to see its sales history and forecast.
+                        </div>
+
+                        <div id="forecast-body" style="display:none;">
+                            <div class="chart-shell">
+                                <canvas id="forecast-chart"></canvas>
+                            </div>
+                            <div class="forecast-readout" id="forecast-info"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================= REPLENISHMENT ============================= -->
+                <section class="view" id="view-replenishment">
+                    <div class="section-head">
+                        <h3>Replenishment</h3>
+                        <p>Reorder points computed from lead time, safety stock and forecast demand.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>Check a product</h4>
+                        <div class="field" style="max-width: 320px;">
+                            <label for="productSelect">Product</label>
+                            <select id="productSelect">
+                                <option value="">Select a product</option>
+                            </select>
+                        </div>
+
+                        <div class="rec-message neutral" id="replenishmentMessage">
+                            Select a product to view its recommendation.
+                        </div>
+
+                        <div class="rec-grid">
+                            <div class="rec-cell"><span>Current stock</span><strong id="currentStock">—</strong></div>
+                            <div class="rec-cell"><span>Daily demand</span><strong id="dailyDemand">—</strong></div>
+                            <div class="rec-cell"><span>Lead time</span><strong id="leadTime">—</strong></div>
+                            <div class="rec-cell"><span>Safety stock</span><strong id="safetyStock">—</strong></div>
+                            <div class="rec-cell"><span>Reorder point</span><strong id="reorderPoint">—</strong></div>
+                            <div class="rec-cell"><span>Suggested order</span><strong id="suggestedOrder">—</strong></div>
+                        </div>
+
+                        <div class="rec-actions">
+                            <button class="btn btn-primary" id="create-po-btn" disabled>
+                                <span class="btn-label">Create purchase order</span>
+                            </button>
+                        </div>
+                        <p class="form-msg" id="po-create-message" style="text-align:right;"></p>
+                    </div>
+
+                    <div class="section-head" style="margin-top:26px;">
+                        <h3>All products</h3>
+                        <p>Reorder status across the full catalog.</p>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="num">Current stock</th>
+                                    <th class="num">Daily demand</th>
+                                    <th class="num">Reorder point</th>
+                                    <th>Reorder?</th>
+                                    <th class="num">Suggested qty</th>
+                                </tr>
+                            </thead>
+                            <tbody id="replenishment-table">
+                                <tr class="row-loading"><td colspan="6">Loading recommendations…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ============================= PURCHASE ORDERS ============================= -->
+                <section class="view" id="view-orders">
+                    <div class="section-head">
+                        <h3>Purchase orders</h3>
+                        <p>Orders placed for replenishment, and their delivery status.</p>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order</th>
+                                    <th>Product</th>
+                                    <th class="num">Quantity</th>
+                                    <th>Order date</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table">
+                                <tr class="row-loading"><td colspan="6">Loading purchase orders…</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-stack" id="toast-stack"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
