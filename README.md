@@ -247,43 +247,43 @@ auto-inventory/
 
 ## 🖥️ Screenshots
 
-### 01 — Dashboard / Interface
+### 01
 
 <img width="1600" height="900" alt="Screenshot (244)" src="https://github.com/user-attachments/assets/a0ca8449-10ed-4d25-ac47-75beafca3023" />
 
-### 02 — Inventory View
+### 02 
 
 <img width="1600" height="900" alt="Screenshot (245)" src="https://github.com/user-attachments/assets/784b72a5-6473-43dc-81e9-6610ec6eb1a4" />
 
-### 03 — Product / Stock Management
+### 03 
 
 <img width="1600" height="900" alt="Screenshot (246)" src="https://github.com/user-attachments/assets/34a26824-3dc3-4859-bcaf-f2442e8abcc3" />
 
-### 04 — Forecasting / Analytics
+### 04 
 
 <img width="1600" height="900" alt="Screenshot (247)" src="https://github.com/user-attachments/assets/6c193bbd-2cf9-44d8-ab1c-01dc028ea067" />
 
-### 05 — Inventory Analysis
+### 05 
 
 <img width="1600" height="900" alt="Screenshot (248)" src="https://github.com/user-attachments/assets/22284359-af63-462d-8cb0-d5d84a89ff8c" />
 
-### 06 — Replenishment
+### 06 
 
 <img width="1600" height="900" alt="Screenshot (249)" src="https://github.com/user-attachments/assets/b4fa918c-6337-4825-897b-4b5ee249d1b7" />
 
-### 07 — Stock Status
+### 07 
 
 <img width="1600" height="900" alt="Screenshot (250)" src="https://github.com/user-attachments/assets/84206a9f-37e5-4299-aea4-c4c591705788" />
 
-### 08 — Forecast / Recommendation
+### 08 
 
 <img width="1600" height="900" alt="Screenshot (251)" src="https://github.com/user-attachments/assets/c0d65f7f-8f73-453a-9421-6ecb1d992c1b" />
 
-### 09 — Purchase / Order Management
+### 09 
 
 <img width="1600" height="900" alt="Screenshot (252)" src="https://github.com/user-attachments/assets/894b7130-d5bd-48d5-86bc-78c9c472b9ce" />
 
-### 10 — Final System View
+### 10 
 
 <img width="1600" height="900" alt="Screenshot (253)" src="https://github.com/user-attachments/assets/abd4ba86-2139-4a2b-8c96-7e7b90fb18a0" />
 
